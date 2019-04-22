@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>设备故障知识图谱工具</title>
+        <meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="{% static 'semantic/dist/semantic.min.css' %}">
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous">
+        </script>
+        <script src="{% static 'universe.js' %}"></script>
+        <script src="{% static 'semantic/dist/semantic.min.js' %}"></script>
+        <script src="{% static 'echarts/dist/echarts.js' %}"></script>
+        <style type="text/css">
+            body {
+                background-color : #ffffff;
+            }
+            .ui.menu .item img.logo {
+                margin-right : 1.5em;
+            }
+            .main.container {
+                margin-top : 7em;
+            }
+            .mcanvas {
+                width : 1000px;
+                height : 600px;
+            }
+            .wireframe {
+                margin-top : 2em;
+            }
+            .ui.footer.segment {
+                margin : 5em 0em 0em;
+                padding : 5em 0em;
+            }
+            .item {
+                margin-top : 1em;
+                margin-bottom : 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class='ui form'>
+            <div class='fields'>
+                <span id='csrf_token'>
+                    {% csrf_token %}
+                </span>
+                <div class='field'>
+                    <label>机型</label>
+                    <input type='text' placeholder='机型' id='prototype' />
+                </div>
+                <button class='ui icon button' id='submit'>
+                    <i class='upload icon'></i>
+                </button>
+            </div>
+        </div>
+        <div class='ui hidden message' id='msg'>
+            <i class='close icon'></i>
+            <div class='header'>请重新输入机型!</div>
+            该机型相关数据未收录入知识图谱中
+        </div>
+        <div class='mcanvas' id='canvas'></div>
+        <script src="{% static 'search_experienced_worker.js' %}"></script>
+    </body>
+</html>

@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>设备故障知识图谱工具</title>
+        <meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="{% static 'semantic/dist/semantic.min.css' %}">
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous">
+        </script>
+        <script src="{% static 'universe.js' %}"></script>
+        <script src="{% static 'semantic/dist/semantic.min.js' %}"></script>
+        <script src="{% static 'echarts/dist/echarts.js' %}"></script>
+        <style type="text/css">
+            body {
+                background-color : #ffffff;
+            }
+            .ui.menu .item img.logo {
+                margin-right : 1.5em;
+            }
+            .main.container {
+                margin-top : 2em;
+            }
+            .mcanvas {
+                width : 800px;
+                height : 600px;
+            }
+            .wireframe {
+                margin-top : 2em;
+            }
+            .ui.footer.segment {
+                margin : 5em 0em 0em;
+                padding : 5em 0em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class='ui main container'>
+            <div class="ui pointing menu">
+                <a class="item active">简单查询</a>
+                <a class="item" href='http://localhost:8000/vis/specQ1/'>服务人员推荐（熟悉度）</a>
+                <a class="item" href='http://localhost:8000/vis/specQ2/'>服务人员推荐（评价）</a>
+                <a class="item" href='http://localhost:8000/vis/specQ3/'>相似案例查询</a>
+            </div>
+            <div class="ui segment">
+                <div class='ui form'>
+                    <span id='csrf'>{% csrf_token %}</span>
+                    <div class='two fields'>
+                        <div class='field'>
+                            <label>查询目标类型</label>
+                            <select class='ui fluid dropdown' id='type'>
+                                <option value='1'>实体</option>
+                                <option value='2'>关系</option>
+                            </select>
+                        </div>
+                        <div class='field'>
+                            <label>查询目标</label>
+                            <input type='text' name='target' placeholder='查询目标' id='target' />
+                        </div>
+                    </div>
+                    <div class='ui button' tabindex='0' id='submit'>查询</div>
+                </div>
+                <div class='ui negative message hidden' id='msg'>
+                    <i class='close icon'></i>
+                    <div class='header' id='msgheader'></div>
+                    <p id='msgbody'></p>
+                </div>
+                <div class='ui divider'></div>
+                <div class='mcanvas' id='canvas'></div>
+            </div>
+        </div>
+        <script src="{% static 'simple_query.js' %}"></script>
+    </body>
+</html>

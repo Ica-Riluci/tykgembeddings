@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>设备故障知识图谱工具</title>
+        <meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="{% static 'semantic/dist/semantic.min.css' %}">
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous">
+        </script>
+        <script src="{% static 'universe.js' %}"></script>
+        <script src="{% static 'semantic/dist/semantic.min.js' %}"></script>
+        <script src="{% static 'echarts/dist/echarts.js' %}"></script>
+        <style type="text/css">
+            body {
+                background-color : #ffffff;
+            }
+            .ui.menu .item img.logo {
+                margin-right : 1.5em;
+            }
+            .main.container {
+                margin-top : 2em;
+            }
+            .mcanvas {
+                width : 800px;
+                height : 600px;
+            }
+            .wireframe {
+                margin-top : 2em;
+            }
+            .ui.footer.segment {
+                margin : 5em 0em 0em;
+                padding : 5em 0em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class='ui main container'>
+            <div class="ui pointing menu">
+                <a class="item" href='http://localhost:8000/vis/simpleQ/'>简单查询</a>
+                <a class="item active">服务人员推荐（熟悉度）</a>
+                <a class="item" href='http://localhost:8000/vis/specQ2/'>服务人员推荐（评价）</a>
+                <a class="item" href='http://localhost:8000/vis/specQ3/'>相似案例查询</a>
+            </div>
+            <div class="ui segment">
+                <div class='ui form'>
+                    <span id='csrf'>{% csrf_token %}</span>
+                    <div class='two fields'>
+                        <div class='field'>
+                            <label>客户</label>
+                            <input type='text' name='customer' placeholder='客户' id='customer' />
+                        </div>
+                        <div class='field'>
+                            <label>机型</label>
+                            <input type='text' name='prototype' placeholder='机型' id='prototype' />
+                        </div>
+                    </div>
+                    <div class='ui button' tabindex='0' id='submit'>查询</div>
+                </div>
+                <div class='ui negative message hidden' id='msg'>
+                    <i class='close icon'></i>
+                    <div class='header' id='msgheader'></div>
+                    <p id='msgbody'></p>
+                </div>
+                <div class='ui divider'></div>
+                <div class='mcanvas' id='canvas'></div>
+            </div>
+        </div>
+        <script src="{% static 'special_query1.js' %}"></script>
+    </body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "tykg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "Ica-Riluci",
+  "license": "ISC",
+  "dependencies": {
+    "echarts": "^4.2.1",
+    "semantic-ui": "^2.4.2"
+  }
+}
