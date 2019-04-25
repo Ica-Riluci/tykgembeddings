@@ -5,10 +5,7 @@
         <title>设备故障知识图谱工具</title>
         <meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
         <link rel="stylesheet" type="text/css" href="{% static 'semantic/dist/semantic.min.css' %}">
-        <script src="https://code.jquery.com/jquery-3.1.1.min.js"
-            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-            crossorigin="anonymous">
-        </script>
+        <script src="{% static 'jquery.js' %}"></script>
         <script src="{% static 'universe.js' %}"></script>
         <script src="{% static 'semantic/dist/semantic.min.js' %}"></script>
         <script src="{% static 'echarts/dist/echarts.js' %}"></script>
@@ -32,6 +29,9 @@
             .ui.footer.segment {
                 margin : 5em 0em 0em;
                 padding : 5em 0em;
+            }
+            .result.hidden {
+                display : none;
             }
         </style>
     </head>
@@ -66,8 +66,10 @@
                     <div class='header' id='msgheader'></div>
                     <p id='msgbody'></p>
                 </div>
-                <div class='ui divider'></div>
-                <div class='mcanvas' id='canvas'></div>
+                <div id='result_container' class='result hidden'>
+                    <div class='ui divider'></div>
+                    <div class='mcanvas' id='canvas'></div>
+                </div>
             </div>
         </div>
         <script src="{% static 'simple_query.js' %}"></script>

@@ -10,5 +10,9 @@ def simple_query(request):
 def special_query1(request):
     return HttpResponse(render(request, 'special_query1.html'))
 
+def special_query2(request):
+    return HttpResponse(render(request, 'special_query2.html'))
 
+def special_query3(request):
+    return HttpResponse(render(request, 'special_query3.html'))
 # Create your views here.

@@ -39,8 +39,8 @@
         <div class='ui main container'>
             <div class="ui pointing menu">
                 <a class="item" href='http://localhost:8000/vis/simpleQ/'>简单查询</a>
-                <a class="item active">服务人员推荐（熟悉度）</a>
-                <a class="item" href='http://localhost:8000/vis/specQ2/'>服务人员推荐（评价）</a>
+                <a class="item" href='http://localhost:8000/vis/specQ1/'>服务人员推荐（熟悉度）</a>
+                <a class="item active">服务人员推荐（评价）</a>
                 <a class="item" href='http://localhost:8000/vis/specQ3/'>相似案例查询</a>
             </div>
             <div class="ui segment">
@@ -48,12 +48,12 @@
                     <span id='csrf'>{% csrf_token %}</span>
                     <div class='three fields'>
                         <div class='field'>
-                            <label>客户</label>
-                            <input type='text' name='customer' placeholder='客户' id='customer' />
-                        </div>
-                        <div class='field'>
                             <label>机型</label>
                             <input type='text' name='prototype' placeholder='机型' id='prototype' />
+                        </div>
+                        <div class='field'>
+                            <label>故障现象</label>
+                            <input type='text' name='errappearance' placeholder='故障现象' id='errappearance' />
                         </div>
                         <div class='field'>
                             <label>推荐列表长度</label>
@@ -75,6 +75,6 @@
                 </div>
             </div>
         </div>
-        <script src="{% static 'special_query1.js' %}"></script>
+        <script src="{% static 'special_query2.js' %}"></script>
     </body>
 </html>

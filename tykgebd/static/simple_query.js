@@ -60,7 +60,7 @@ var load_chart = function(graph) {
                 },
                 emphasis: {
                     lineStyle: {
-                        width: 10
+                        width: 5
                     }
                 }
             }
@@ -91,6 +91,7 @@ var query = function() {
                     $('#msg').attr('class', 'ui negative message');
                 } else {
                     $('#msg').attr('class', 'ui negative hidden message');
+                    $('#result_container').attr('class', '');
                     load_chart(resp.content);
                 }
             }

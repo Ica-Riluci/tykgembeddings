@@ -214,7 +214,7 @@ def simpleQ(request):
 def specQ1(request):
     if request.method == 'POST':
         input = json.loads(request.body.decode())
-        cypher_q = 'MATCH (n1:服务人员)-[e1]-(n2:记录编号)-[e2]-(n3:任务号)-[e3]-(n4:联系人)-[e4]-(n5:机号)-[e5]-(n6:机型) WHERE n4.value="' + input['customer'] +'" and n6.value="' + input['prototype'] +'" RETURN n1, n2, n3, n4, n6, e1, e2, e3, e4, e5'
+        cypher_q = 'MATCH (n1:服务人员)-[e1]-(n2:记录编号)-[e2]-(n3:任务号)-[e3]-(n4:联系人)-[e4]-(n5:机号)-[e5]-(n6:机型), (n3)-[e6]-(n6) WHERE n4.value="' + input['customer'] +'" and n6.value="' + input['prototype'] +'" RETURN n1, n2, n3, n4, n5, n6, e1, e2, e3, e4, e5, e6'
         db = ngraph(settings.NEO_URL, user=settings.NEO_USER, password=settings.NEO_PW)
         qresp = db.run(cypher_q).data()
         # for p in qresp:
@@ -247,20 +247,49 @@ def specQ1(request):
                         node_count[str(p['n1'].identity)] = 1
                     task_count.add((p['n1'].identity, p['n3'].identity))
             commend_list = []
+            # print(node_count)
             for key in node_count.keys():
+                # print('list:', end='')
+                # print(commend_list)
                 if len(commend_list) == 0:
-                    commend_list.append((key, node_count[key]))
+                    commend_list = [(key, node_count[key])]
                 else:
-                    if node_count[key] > commend_list[-1][1]:
-                        commend_list = [(key, node_count[key])]
-                    elif node_count[key] == commend_list[-1][1]:
-                        commend_list.append((key, node_count[key]))
+                    prev_l = commend_list
+                    post_l = []
+                    for i in range(len(commend_list)):
+                        idx = len(commend_list) - i - 1
+                        if commend_list[idx][1] >= node_count[key]:
+                            prev_l = commend_list[:idx + 1]
+                            post_l = commend_list[idx + 1:]
+                            prev_l.append((key, node_count[key]))
+                            prev_l.extend(post_l)
+                            commend_list = prev_l
+                            break
+                        elif idx == 0:
+                            prev_l = [(key, node_count[key])]
+                            prev_l.extend(commend_list)
+                            commend_list = prev_l
+                # if len(commend_list) == 0:
+                #     commend_list.append((key, node_count[key]))
+                # else:
+                #     # if node_count[key] > commend_list[-1][1]:
+                #     #     commend_list = [(key, node_count[key])]
+                #     # elif node_count[key] == commend_list[-1][1]:
+                #     #     commend_list.append((key, node_count[key]))
             node_set = set([])
-            for cand in commend_list:
-                cypher_q = 'MATCH (n1:服务人员)-[e1]-(n2:记录编号)-[e2]-(n3:任务号)-[e3]-(n4:联系人)-[e4]-(n5:机号)-[e5]-(n6:机型) WHERE id(n1)=' + str(cand[0]) + ' and n4.value="' + input['customer'] +'" and n6.value="' + input['prototype'] +'" RETURN n1, n2, n3, n4, n5, n6, e1, e2, e3, e4, e5'
-                qresp = db.run(cypher_q).data()
-                symbol_size = [20, 5, 10, 20, 5, 20]
-                for p in qresp:
+            tmp = commend_list[:input['list_len']]
+            commend_list = []
+            for i in tmp:
+                commend_list.append(int(i[0]))
+            # print(commend_list)
+            name_list = []
+            for i in commend_list:
+                cypher_q = 'MATCH (n) WHERE id(n)=' + str(i) + ' RETURN n'
+                name_list.append(db.run(cypher_q).data()[0]['n']['value'])
+            symbol_size = [20, 5, 10, 20, 5, 20]
+            for p in qresp:
+                # print(p)
+                if p['n1'].identity in commend_list:
                     for i in range(6):
                         if p['n' + str(i + 1)].identity not in node_set:
                             node_set.add(p['n' + str(i + 1)].identity)
@@ -269,25 +298,19 @@ def specQ1(request):
                                 'name' : get_node(p['n' + str(i + 1)]),
                                 'symbolSize' : symbol_size[i]
                             })
-                    for i in range(5):
+                    for i in range(6):
                         graph['edges'].append({
                             'source' : get_node(p['e' + str(i + 1)]._Walkable__sequence[0]),
                             'target' : get_node(p['e' + str(i + 1)]._Walkable__sequence[2]),
                             'value' : get_type(str(type(p['e' + str(i + 1)])))
                         })
-                    cypher_q = 'MATCH (n:任务号)-[e]-(m:机型) WHERE id(n)=' + str(p['n3'].identity) + ' and id(m)=' + str(p['n6'].identity) + ' RETURN e'
-                    qresp1 = db.run(cypher_q).data()
-                    # print(qresp1[0]['e']._Walkable__sequence[1])
-                    graph['edges'].append({
-                        'source' : get_node(qresp1[0]['e']._Walkable__sequence[0]),
-                        'target' : get_node(qresp1[0]['e']._Walkable__sequence[2]),
-                        'value' : get_type(str(type(qresp1[0]['e'])))
-                    })
             resp = {
                 'empty' : False,
-                'content' : graph
+                'graph_cont' : graph,
+                'list_cont' : name_list
             }
-            q = SpecQuery1(q_type=SpecQuery1.QTYPE, proto=input['prototype'], customer_id=input['customer'], q_result=json.dumps(resp['content']))
+            # print(resp['graph_cont'])
+            q = SpecQuery1(q_type=SpecQuery1.QTYPE, proto=input['prototype'], customer_id=input['customer'], q_result=json.dumps(resp['graph_cont']))
             q.save()
             return jsonresp(resp)
     else:
