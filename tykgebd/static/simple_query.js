@@ -29,9 +29,9 @@ var load_chart = function(graph) {
                 type: 'graph',
                 layout: 'force',
                 // force : {
-                //     repulsion : 0,
-                //     gravity : 0.1,
-                //     edgeLength : [100, 110]
+                //     repulsion : 4,
+                //     gravity : 5,
+                //     edgeLength : 100
                 // },
                 data: nodes,
                 links: graph['edges'],

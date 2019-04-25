@@ -18,113 +18,6 @@ def get_node(n):
 def jsonresp(js):
     return HttpResponse(json.dumps(js), content_type='application/json')
 
-# Create your views here.
-def prototype_worker(request):
-    if request.method == 'GET':
-        return HttpResponse(json.dumps({'empty':True, 'content' : None}), content_type='application/json')
-    elif request.method == 'POST':
-        inp = json.loads(request.body.decode())
-        qg = ngraph(settings.NEO_URL, user=settings.NEO_USER, password=settings.NEO_PW)
-        qdata = qg.run('MATCH (worker:服务人员)-[]-(:记录编号)-[]-(task:任务号)-[]-(proto:机型) where proto.value="' + inp['prototype']+'" return worker, task').data()
-        cnt = [(-1, 0) for i in range(len(qdata))]
-        max_app = 0
-        for p in qdata:
-            worker = p['worker'].identity
-            idx = worker % len(cnt)
-            while cnt[idx][0] != worker and cnt[idx][0] != -1:
-                idx += 1
-                if idx >= len(cnt):
-                    idx = 0
-            if cnt[idx][0] == -1:
-                cnt[idx] = (worker, cnt[idx][1])
-            cnt[idx] = (cnt[idx][0], cnt[idx][1] + 1)
-            if max_app < cnt[idx][1]:
-                max_app = cnt[idx][1]
-        resp = {
-            'categories' : ['服务人员', '记录编号', '任务号', '机型'],
-            'nodes' : [{
-                'category' : 3,
-                'name' : inp['prototype'],
-                'symbolSize' : 20,
-                'x' : 0,
-                'y' : 300
-            }],
-            'edges' : []
-        }
-        id_list = []
-        for i in cnt:
-            if i[1] == max_app:
-                id_list.append(i[0])
-        for i in id_list:
-            tgtnode = qg.run('MATCH (worker:服务人员) WHERE id(worker)=' + str(i) + ' RETURN worker').data()
-            node = {
-                'category' : 0,
-                'name' : '[' + str(tgtnode[0]['worker'].identity) + ']' + dict(tgtnode[0]['worker'])['value'],
-                'symbolSize' : 20,
-                'x' : 0,
-                'y' : -300
-            }
-            resp['nodes'].append(node)
-            for t in qg.run('MATCH (worker:服务人员)-[]-(:记录编号)-[]-(task:任务号)-[]-(proto:机型) WHERE id(worker)=' + str(i) +' and proto.value="' + inp['prototype'] + '" RETURN task').data():
-                tnode = {
-                    'category' : 2,
-                    'name' : dict(t['task'])['value'],
-                    'symbolSize' : 20,
-                    'x' : 0,
-                    'y' : 100
-                }
-                e = {
-                    'source' : tnode['name'],
-                    'target' : inp['prototype']
-                }
-                if not tnode in resp['nodes']:
-                    resp['nodes'].append(tnode)
-                if not e in resp['edges']:
-                    resp['edges'].append(e)
-                for s in qg.run('MATCH (service:记录编号)-[]-(task:任务号) where id(task)=' + str(t['task'].identity) + ' RETURN service, task').data():
-                    snode = {
-                        'category' : 1,
-                        'name' : dict(s['service'])['value'],
-                        'symbolSize' : 10,
-                        'x' : 0,
-                        'y' : -100
-                    }
-                    if snode not in resp['nodes']:
-                        resp['nodes'].append(snode)
-                    e = {
-                        'source' : dict(s['task'])['value'],
-                        'target' : dict(s['service'])['value']
-                    }
-                    if e not in resp['edges']:
-                        resp['edges'].append(e)
-                    e = {
-                        'source' : '[' + str(tgtnode[0]['worker'].identity) + ']' + dict(tgtnode[0]['worker'])['value'],
-                        'target' : dict(s['service'])['value']
-                    }
-                    if e not in resp['edges']:
-                        resp['edges'].append(e)
-        for i in range(1, 4):
-            cnt = 0
-            for x in resp['nodes']:
-                if x['category'] == i:
-                    cnt += 1
-            start = 0
-            pace = 0
-            if cnt > 10:
-                start = -500
-                pace = 1000.0 / (cnt - 1)
-            else:
-                pace = 100
-                start = -500 + (1000 - pace * (cnt - 1)) / 2.0
-            for x in range(0, len(resp['nodes'])):
-                if resp['nodes'][x]['category'] == i:
-                    resp['nodes'][x]['x'] = start
-                    start = start + pace
-        return HttpResponse(json.dumps({
-            'empty' : False,
-            'content' : resp
-        }), content_type='application/json')
-
 def simpleQ(request):
     if request.method == 'POST':
         input = json.loads(request.body.decode())
@@ -189,7 +82,7 @@ def simpleQ(request):
                             graph['nodes'].append({
                                 'category' : graph['categories'].index(triple['x']['type']),
                                 'name' : get_node(triple['x']),
-                                'symbolSize' : 10
+                                'symbolSize' : 2
                             })
                     graph['edges'].append({
                         'source' : get_node(triple['e']._Walkable__sequence[0]),
