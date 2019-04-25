@@ -5,7 +5,7 @@ The embedding tools for Tianyuan Knowledge Graph Applications
 
 ```gitignore
 /**/migrations/
-/db.qlite3
+/db.sqlite3
 # migration data and database
 
 /**/__pycache__/
